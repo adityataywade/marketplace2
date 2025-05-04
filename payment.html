@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Payment</title>
+  <link rel="stylesheet" href="style2.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="payment-container">
+  <div class="product-details">
+    <div class="product-image" id="productImage"></div>
+    <div class="product-info">
+      <h2 id="productName">Product Name</h2>
+      <p id="productDescription">Product description...</p>
+      <p><strong>Category:</strong> <span id="productCategory"></span></p>
+      <p><strong>Price:</strong> ₹<span id="productPrice"></span></p>
+      <div class="payment-section">
+        <button class="pay-btn-modern" onclick="showPaymentPopup()">
+          <i class="fas fa-wallet"></i> Proceed to Payment
+        </button>
+            
+      </div>
+    </div>
+  </div>
+  <a href="index.html" class="back-btn">← Back to Home</a>
+  <div id="contactNoteBox" style="display:none; margin-top: 20px; padding: 15px; background: #e6f7ff; border: 1px solid #91d5ff; border-radius: 5px;">
+    <strong>Note:</strong> if any quries please contact on this number <strong>8766880183</strong>.
+  </div>
+</div>
+
+<!-- QR Code Popup -->
+<div id="qrPopup" class="qr-popup-modern">
+  <div class="qr-content-modern">
+    <span class="close-btn-modern" onclick="closePaymentPopup()">&times;</span>
+    <h2>Scan to Pay</h2>
+    <img src="payment.jpg" alt="QR Code" class="qr-img-modern" />
+    <p class="upi-id-modern">UPI ID: <strong>dipaktaywade3@okaxis</strong></p>
+    <h3>After payment</h3>
+    <div class="payment-id-section">
+      <input type="text" id="manualPaymentId" placeholder="Enter your UPI Reference ID" />
+      <button onclick="sendPaymentId()" class="send-id-btn">Send My Payment ID</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Animation Popup -->
+<div id="successPopup" class="success-popup">
+  <!-- <button id="adminConfirmBtn" style="display:none;" onclick="adminConfirmPayment()">✅ Confirm Payment</button> -->
+  <div class="checkmark-wrapper">
+    <svg class="checkmark" viewBox="0 0 52 52">
+      <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+      <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16" />
+    </svg>
+    <p class="success-message">Payment Successful!</p>
+  </div>
+</div>
+<audio id="successSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c1a08d949f.mp3?filename=correct-2-46134.mp3" preload="auto"></audio>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+  function handlePaymentSuccess() {
+    const sound = document.getElementById("successSound");
+
+    // Try to play sound if allowed
+    if (sound) {
+      sound.muted = false;
+      sound.volume = 1.0;
+      sound.play().catch(err => {
+        console.warn("Autoplay blocked. Will retry on user interaction.");
+      });
+    }
+
+    // Confetti effect
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
+    // Popup after short delay
+    setTimeout(() => {
+      alert("🎉 Payment Successful!");
+    }, 500);
+  }
+
+  // Optional: If payment success is triggered after a button or click:
+  // document.getElementById("yourPaymentButton").addEventListener("click", handlePaymentSuccess);
+
+  // OR if it's called after Firebase confirms a payment, call:
+  // handlePaymentSuccess() at that point directly.
+</script>
+
+<!-- Firebase & Logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import {
+    getDatabase, ref, push, set
+  } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+  import {
+    getAuth, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyAbDaEt1ACIRNyC4QerqZQhTO8VJuNoWfE",
+    authDomain: "marketplace-378f6.firebaseapp.com",
+    databaseURL: "https://marketplace-378f6-default-rtdb.firebaseio.com",
+    projectId: "marketplace-378f6",
+    storageBucket: "marketplace-378f6.appspot.com",
+    messagingSenderId: "519512596002",
+    appId: "1:519512596002:web:b4cd5978ffa111ef55b47b"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth(app);
+  
+  // Show payment modal
+  window.showPaymentPopup = () => {
+    document.getElementById("qrPopup").style.display = "flex";
+  };
+  
+  // Close payment modal
+  window.closePaymentPopup = () => {
+    document.getElementById("qrPopup").style.display = "none";
+  };
+  
+  // Send Payment ID & confirm
+  window.sendPaymentId = async function () {
+    const enteredId = document.getElementById("manualPaymentId").value.trim();
+    const sendButton = document.querySelector(".send-id-btn");
+
+    if (!enteredId) {
+      alert("❌ Please enter your UPI reference ID.");
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (!user) {
+      alert("You must be logged in to make a payment.");
+      return;
+    }
+
+    const product = JSON.parse(localStorage.getItem("selectedProduct"));
+    if (!product) {
+      alert("❌ No product found in localStorage.");
+      return;
+    }
+
+    const customPayId = 'pay_' + Date.now();
+
+    const paymentData = {
+      userId: user.uid,
+      email: user.email || "",
+      payId: enteredId,
+      name: user.displayName || "anonymous",
+      amount: product.price || "",
+      productId: product.id || "",
+      productName: product.product_name || "",
+      timestamp: new Date().toISOString()
+    };
+
+    console.log("🔥 Submitting payment data:", paymentData);
+
+    // Show loading
+    sendButton.disabled = true;
+    const originalText = sendButton.textContent;
+    sendButton.textContent = "Processing...";
+
+    try {
+      await set(ref(db, 'payments/' + customPayId), paymentData);
+
+      await fetch('https://script.google.com/macros/s/AKfycbz-ojRLbqkCUFrFK0qe9bJOMHPZnTYuf_djXUlrzRy7Y1dsitmB0HMItgbIBfkS3LGd/exec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(paymentData)
+      })
+      .then(res => res.json())
+      .then(res => console.log('📄 Google Sheet response:', res))
+      .catch(err => console.error('❌ Failed to send to Sheet:', err));
+
+      showPaymentSuccess();
+    } catch (err) {
+      console.error("❌ Failed to submit payment:", err);
+      alert("❌ Payment submission failed. Please try again.");
+    } finally {
+      sendButton.disabled = false;
+      sendButton.textContent = originalText;
+    }
+  };
+  function showPaymentSuccess() {
+  document.getElementById("qrPopup").style.display = "none";
+  document.getElementById("successPopup").style.display = "flex";
+  document.getElementById("successSound").play();
+
+  if (typeof confetti === "function") {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  }
+
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+  const productId = Date.now();
+
+  onAuthStateChanged(auth, (user) => {
+    if (user && product) {
+      set(ref(db, `carts/${user.uid}/${productId}`), product)
+        .then(() => console.log("✅ Product added to cart!"))
+        .catch(err => console.error("❌ Failed to add to cart: " + err.message));
+    }
+  });
+
+  // Show contact note
+  const contactNote = document.getElementById("contactNoteBox");
+  if (contactNote) {
+    contactNote.style.display = "block";
+  }
+
+  // ⏱️ Auto-hide success popup after 5 seconds
+  setTimeout(() => {
+    document.getElementById("successPopup").style.display = "none";
+  }, 3000);
+}
+
+
+    // ⛔ No redirect
+    // setTimeout(() => {
+    //   window.location.href = "index.html";
+    // }, 3000);
+  
+
+  // Load selected product
+  window.onload = () => {
+    const product = JSON.parse(localStorage.getItem('selectedProduct'));
+    if (product) {
+      document.getElementById('productName').textContent = product.product_name;
+      document.getElementById('productDescription').textContent = product.description;
+      document.getElementById('productCategory').textContent = product.category;
+      document.getElementById('productPrice').textContent = product.price;
+      document.getElementById('productImage').style.backgroundImage = `url(${product.image_url})`;
+    } else {
+      document.querySelector('.payment-container').innerHTML = '<p style="text-align:center">No product selected.</p>';
+    }
+  };
+</script>
+
+</body>
+</html>
