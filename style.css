@@ -13,10 +13,10 @@ html, body {
 .navbar {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   align-items: center;
 
-  flex-direction: column;
+  flex-direction: row;
 
   background-color: #111;
   padding: 10px;
@@ -65,7 +65,7 @@ html, body {
 .nav-login,
 .nav-cart,
 #adminLoginBtn {
-  width: 100%;
+  /* width: 100%; */
   text-align: center;
 }
 /* Ensure cart is always visible and styled */
@@ -90,85 +90,121 @@ html, body {
 }
 
 @media (min-width: 1024px) {
-  .navbar {
+ .navbar {
+    display: flex;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px 30px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 4px;
   }
 
   .nav-search {
+    display: flex;
     flex-direction: row;
     align-items: center;
-    max-width: 300px;
-    flex: 1;
+    gap: 6px;
+    flex: 1; /* Take remaining space */
+    min-width: 0; /* Allow to shrink */
   }
 
-  .select-search,
+  .select-search {
+    flex: 0 0 20%; /* shrinkable, fixed size */
+    min-width: 60px;
+    text-align: center;
+  }
+
   .search-input {
     flex: 1;
-    width: auto;
+    min-width: 100px;
   }
 
   .search-icon {
-    width: 45px;
+    flex-shrink: 0;
+    width: 24px;
   }
-/* Ensure cart is always visible and styled */
-.nav-cart {
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 1.1rem;
-  padding: 5px 10px;
-  transition: color 0.3s ease;
-}
 
-.nav-cart i {
-  font-size: 18px;
-}
+  .nav-login {
+    flex-shrink: 0;
+    padding: 2px 6px;
+  }
 
-.nav-cart:hover {
-  color: #ffcc00;
-}
+  .nav-login span {
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px; /* Limit email display */
+    display: inline-block;
+    vertical-align: middle;
+  }
 
-/* .cart-badge {
-  background: red;
-  color: white;
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 50%;
-  margin-left: 6px;
-}
- */
-
-  .nav-login,
-  .nav-cart,
-  #adminLoginBtn {
-    width: auto;
-    text-align: right;
+  .logout-btn {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+    margin-left: 4px;
   }
 }
+
+
 @media (min-width: 768px) and (max-width: 1023px) {
   .navbar {
-    flex-direction: column;
-    align-items: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 4px;
   }
 
   .nav-search {
-    width: 100%;
+    display: flex;
     flex-direction: row;
-    gap: 50px;
+    align-items: center;
+    gap: 6px;
+    flex: 1; /* Take remaining space */
+    min-width: 0; /* Allow to shrink */
   }
 
-  .select-search,
-  .search-input,
-  .search-icon {
+  .select-search {
+    flex: 0 0 20%; /* shrinkable, fixed size */
+    min-width: 60px;
+  }
+
+  .search-input {
     flex: 1;
+    min-width: 100px;
+  }
+
+  .search-icon {
+    flex-shrink: 0;
+    width: 24px;
+  }
+
+  .nav-login {
+    flex-shrink: 0;
+    padding: 2px 6px;
+  }
+
+  .nav-login span {
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px; /* Limit email display */
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .logout-btn {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+    margin-left: 4px;
   }
 }
+
 
 /* mobile nav bar */
 
