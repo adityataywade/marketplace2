@@ -98,6 +98,38 @@
     <h1>Available Items</h1>
   </div>
 
+  <!-- Filter & Sort Section -->
+<div class="filter-sort-bar">
+  <div class="filter-group">
+    <button id="filterBtn" class="filter-btn">Filter <i class="fa fa-filter"></i></button>
+    <div id="filterDropdown" class="filter-dropdown">
+      <label><input type="checkbox" class="filter-category" value="Electronics"> Electronics</label>
+      <label><input type="checkbox" class="filter-category" value="Books"> Books</label>
+      <label><input type="checkbox" class="filter-category" value="Stationery"> Stationery</label>
+      <label><input type="checkbox" class="filter-category" value="Laptops"> Laptops</label>
+      <label><input type="checkbox" class="filter-category" value="Smartphones"> Smartphones</label>
+      <label><input type="checkbox" class="filter-category" value="Clothing"> Clothing</label>
+      <label><input type="checkbox" class="filter-category" value="Accessories"> Accessories</label>
+      <label><input type="checkbox" class="filter-category" value="Other"> Other</label>
+      <hr>
+      <label>Price Range:</label>
+      <input type="number" id="minPrice" placeholder="Min ₹" style="width:70px;"> -
+      <input type="number" id="maxPrice" placeholder="Max ₹" style="width:70px;">
+      <button id="applyFilterBtn" class="apply-btn">Apply</button>
+    </div>
+  </div>
+  <div class="sort-group">
+    <label for="sortSelect">Sort by:</label>
+    <select id="sortSelect" class="sort-select">
+      <option value="recent">Most Recently Added</option>
+      <option value="low">Price: Low to High</option>
+      <option value="high">Price: High to Low</option>
+      <option value="az">Name: A-Z</option>
+      <option value="za">Name: Z-A</option>
+    </select>
+  </div>
+</div>
+
   <div class="shop-section" id="shopSection">
     <!-- Category sections will be injected here by JS -->
   </div>
@@ -166,53 +198,52 @@
 
 <div id="sellerPaymentStatus" style="display:none; margin-top:20px; font-weight:bold;"></div>
 
-  <!-- new footer -->
-  <footer class="marketplace-footer">
-    <div class="footer-top">
-      <div class="footer-logo">
-        <a href="#" class="footer-logo-link">
-          <img src="EKD logo.jpeg" alt="Marketplace Logo" width="150px">
-        </a>
+  <!-- Modern Responsive Footer -->
+<footer class="footer-modern">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <img src="EKD logo.jpeg" alt="Marketplace Logo" />
+      <h2>Marketplace</h2>
+      <p style="color:#bbb;max-width:220px;font-size:1rem;line-height:1.5;">Your trusted campus marketplace for buying and selling essentials, gadgets, books, and more.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#shopSection">Shop</a></li>
+          <li><a href="#sell">Sell</a></li>
+          <li><a href="#">About</a></li>
+        </ul>
       </div>
-      <div class="footer-links">
-        <div class="footer-link-column">
-          <h3>Marketplace</h3>
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Products</a></li>
-            <li><a href="#">Shop</a></li>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Contact</a></li>
-          </ul>
-        </div>
-        <div class="footer-link-column">
-          <h3>Customer Service</h3>
-          <ul>
-            <li><a href="#">FAQ</a></li>
-            <li><a href="#">Returns</a></li>
-            <li><a href="#">Shipping</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-          </ul>
-        </div>
-        <div class="footer-link-column">
-          <h3>Follow Us</h3>
-          <ul class="social-media">
-            <!-- <li><a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a></li>
-            <li><a href="#" class="social-icon twitter"><i class="fab fa-twitter"></i></a></li> -->
-            <li><a href="https://www.instagram.com/aditya_taywade123?igsh=MWg2d2l6c2R1amZjZw=="
-                class="social-icon instagram"><i class="fab fa-instagram"></i></a></li>
-            <li><a
-                href="https://www.linkedin.com/in/aditya-taywade-b514b4331?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
-                class="social-icon linkedin"><i class="fab fa-linkedin"></i></a></li>
-          </ul>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">Shipping</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/aditya_taywade123?igsh=MWg2d2l6c2R1amZjZw==" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.linkedin.com/in/aditya-taywade-b514b4331?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
         </div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2024 Marketplace | All rights reserved.</p>
-    </div>
-  </footer>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2024 Marketplace &mdash; All rights reserved.
+  </div>
+</footer>
 
 <!-- Font Awesome CDN for Social Icons -->
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -534,6 +565,35 @@ form.addEventListener('submit', async e => {
 });
 form.reset();
 
+  // --- FILTER & SORT LOGIC ---
+const filterBtn = document.getElementById('filterBtn');
+const filterDropdown = document.getElementById('filterDropdown');
+const applyFilterBtn = document.getElementById('applyFilterBtn');
+const sortSelect = document.getElementById('sortSelect');
+let activeFilters = { categories: [], minPrice: null, maxPrice: null };
+let activeSort = 'recent';
+
+filterBtn.addEventListener('click', () => {
+  filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+});
+document.addEventListener('click', (e) => {
+  if (!filterDropdown.contains(e.target) && e.target !== filterBtn) {
+    filterDropdown.style.display = 'none';
+  }
+});
+applyFilterBtn.addEventListener('click', () => {
+  const checked = Array.from(document.querySelectorAll('.filter-category:checked')).map(cb => cb.value);
+  const minPrice = parseFloat(document.getElementById('minPrice').value) || null;
+  const maxPrice = parseFloat(document.getElementById('maxPrice').value) || null;
+  activeFilters = { categories: checked, minPrice, maxPrice };
+  displayProducts(document.getElementById('searchInput').value.trim());
+  filterDropdown.style.display = 'none';
+});
+sortSelect.addEventListener('change', () => {
+  activeSort = sortSelect.value;
+  displayProducts(document.getElementById('searchInput').value.trim());
+});
+
   // 9. FETCH & DISPLAY PRODUCTS (CATEGORY-WISE HORIZONTAL SCROLL FOR MOBILE)
   function displayProducts(query = '') {
     const shopSection = document.getElementById('shopSection');
@@ -548,10 +608,33 @@ form.reset();
       // Filter by query if needed
       let filtered = products;
       if (query) {
-        filtered = products.filter(p =>
+        filtered = filtered.filter(p =>
           p.product_name?.toLowerCase().includes(query.toLowerCase()) ||
           p.category?.toLowerCase().includes(query.toLowerCase())
         );
+      }
+      // Apply category filter
+      if (activeFilters.categories.length > 0) {
+        filtered = filtered.filter(p => activeFilters.categories.includes(p.category));
+      }
+      // Apply price filter
+      if (activeFilters.minPrice !== null) {
+        filtered = filtered.filter(p => parseFloat(p.price) >= activeFilters.minPrice);
+      }
+      if (activeFilters.maxPrice !== null) {
+        filtered = filtered.filter(p => parseFloat(p.price) <= activeFilters.maxPrice);
+      }
+      // Sort
+      if (activeSort === 'low') {
+        filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+      } else if (activeSort === 'high') {
+        filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+      } else if (activeSort === 'az') {
+        filtered.sort((a, b) => (a.product_name || '').localeCompare(b.product_name || ''));
+      } else if (activeSort === 'za') {
+        filtered.sort((a, b) => (b.product_name || '').localeCompare(a.product_name || ''));
+      } else if (activeSort === 'recent') {
+        filtered.sort((a, b) => (b.key || '').localeCompare(a.key || ''));
       }
       // Group by category
       const categories = {};
