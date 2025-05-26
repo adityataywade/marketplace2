@@ -98,64 +98,73 @@
     <h1>Available Items</h1>
   </div>
 
-  <div class="shop-section">
-    <div class="scrollable-products" id="scrollableProducts"></div>
-    <div class="grid-products" id="gridProducts"></div>
-
+  <div class="shop-section" id="shopSection">
+    <!-- Category sections will be injected here by JS -->
   </div>
 
-  <!-- SELL PRODUCT  -->
-  <section id="sell" class="sell-section">
-    <div class="sell-container">
-      <h2 class="sell-title">Sell Your Product</h2>
-      <p class="sell-subtitle">Fill the details below and reach thousands of customers!</p>
+  <!-- SELL PRODUCT -->
+<section id="sell" class="sell-section">
+  <div class="sell-container">
+    <h2 class="sell-title">Sell Your Product</h2>
+    <p class="sell-subtitle">Fill the details below and reach thousands of customers!</p>
 
-      <form id="sellForm" class="sell-form">
-        <div class="form-group">
-          <input type="text" name="product_name" placeholder="Product Name" required>
-        </div>
-        <div class="form-group">
-          <select name="category" required>
-            <option value="">Select a category</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Books">Books</option>
-            <option value="Calculators">Calculators</option>
-            <option value="Stationery">Stationery</option>
-            <option value="Laptops">Laptops</option>
-            <option value="Smartphones">Smartphones</option>
-            <option value="Gaming">Gaming</option>
-            <option value="Beauty">Beauty</option>
-            <option value="Clothing">Clothing</option>
-            <option value="Accessories">Accessories</option>
-            <option value="Art & Craft">Art & Craft</option>
-            <option value="Sports">Sports</option>
-            <option value="Music">Music</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
+    <form id="sellForm" class="sell-form">
+      <div class="form-group">
+        <input type="text" id="productName" placeholder="Product Name" required>
+      </div>
 
+      <div class="form-group">
+        <select id="productCategory" required>
+          <option value="">Select a category</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Books">Books</option>
+          <option value="Calculators">Calculators</option>
+          <option value="Stationery">Stationery</option>
+          <option value="Laptops">Laptops</option>
+          <option value="Smartphones">Smartphones</option>
+          <option value="Gaming">Gaming</option>
+          <option value="Beauty">Beauty</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Accessories">Accessories</option>
+          <option value="Art & Craft">Art & Craft</option>
+          <option value="Sports">Sports</option>
+          <option value="Music">Music</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
 
-        <div class="form-group">
-          <input type="number" name="price" placeholder="Price (in ₹)" required>
-        </div>
-        <div class="form-group">
-          <textarea name="description" placeholder="Description" rows="4" required></textarea>
-        </div>
-        <div class="form-group">
-          <input type="file" name="image_url" id="imageFile" accept="image/*" />
+      <div class="form-group">
+        <input type="number" id="productPrice" placeholder="Price (in ₹)" required>
+      </div>
 
+      <div class="form-group">
+        <textarea id="productDescription" placeholder="Description" rows="4" required></textarea>
+      </div>
 
+      <div class="form-group">
+        <input type="file" id="imageFile" accept="image/*" required>
+      </div>
 
-        </div>
-        <div id="loading-spinner" style="display: none;">
-          <p>Submitting...</p>
-        </div>
+      <!-- Seller Details -->
+      <div class="form-group">
+        <input type="text" id="sellerName" placeholder="Your Name" required>
+      </div>
 
-        <button type="submit" class="sell-btn">Submit Product</button>
-      </form>
-    </div>
-  </section>
+      <div class="form-group">
+        <input type="tel" id="sellerMobile" placeholder="Your Mobile Number" required>
+      </div>
 
+      <!-- Loader -->
+      <div id="loading-spinner" style="display: none;">
+        <p>Submitting...</p>
+      </div>
+
+      <button type="submit" class="sell-btn">Submit Product</button>
+    </form>
+  </div>
+</section>
+
+<div id="sellerPaymentStatus" style="display:none; margin-top:20px; font-weight:bold;"></div>
 
   <!-- new footer -->
   <footer class="marketplace-footer">
@@ -205,198 +214,147 @@
     </div>
   </footer>
 
-  <!-- Font Awesome CDN for Social Icons -->
-  <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<!-- Font Awesome CDN for Social Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
+<!-- All your JS in one module -->
+<script type="module">
+  // 1. Imports
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import {
+    getDatabase, ref, push, onValue, remove
+  } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut,
+    sendEmailVerification,
+    signInWithPhoneNumber,
+    RecaptchaVerifier,
+    GoogleAuthProvider,
+    signInWithPopup
+  } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
+  // 2. Firebase config & init
+  const firebaseConfig = {
+    apiKey: "AIzaSyAbDaEt1ACIRNyC4QerqZQhTO8VJuNoWfE",
+    authDomain: "marketplace-378f6.firebaseapp.com",
+    databaseURL: "https://marketplace-378f6-default-rtdb.firebaseio.com",
+    projectId: "marketplace-378f6",
+    storageBucket: "marketplace-378f6.firebasestorage.app",
+    messagingSenderId: "519512596002",
+    appId: "1:519512596002:web:b4cd5978ffa111ef55b47b",
+    measurementId: "G-7XT82KHEGS"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
 
-
-  <!-- sell product js  -->
-  <script>
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-
-    // import { onValue } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const cartRef = ref(db, `carts/${user.uid}`);
-        onValue(cartRef, (snapshot) => {
-          const cartItems = snapshot.val();
-          const count = cartItems ? Object.keys(cartItems).length : 0;
-          const badge = document.getElementById("cartBadge");
-          if (badge) {
-            badge.textContent = count;
-            badge.style.display = count > 0 ? 'inline-block' : 'none';
-          }
-        });
-      }
-    });
-
-
-  </script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
-
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
-    // ✅ 1. DEFINE CONFIG FIRST
-    const firebaseConfig = {
-      apiKey: "AIzaSyAbDaEt1ACIRNyC4QerqZQhTO8VJuNoWfE",
-      authDomain: "marketplace-378f6.firebaseapp.com",
-      databaseURL: "https://marketplace-378f6-default-rtdb.firebaseio.com",
-      projectId: "marketplace-378f6",
-      storageBucket: "marketplace-378f6.firebasestorage.app",
-      messagingSenderId: "519512596002",
-      appId: "1:519512596002:web:b4cd5978ffa111ef55b47b",
-      measurementId: "G-7XT82KHEGS"
-    };
-
-    // ✅ 2. INITIALIZE FIREBASE
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-    // Show login modal when Login button in navbar is clicked
-    // Login popup logic
-    document.getElementById('navbarLoginBtn').onclick = () => {
-      document.getElementById('loginModal').style.display = 'block';
-    };
-
-    document.getElementById('logoutBtn').onclick = () => {
-      signOut(auth);
-    };
-
-    // Auth state updates
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById('loginModal').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'inline-block';
-        const userEmailDisplay = document.getElementById('userEmail');
-        if (userEmailDisplay) {
-          userEmailDisplay.textContent = `Your ID is - ${user.email}`;
+  // 3. Track current user globally
+  let currentUser = null;
+  onAuthStateChanged(auth, user => {
+    currentUser = user;
+    // Cart badge update
+    if (user) {
+      const cartRef = ref(db, `carts/${user.uid}`);
+      onValue(cartRef, snap => {
+        const badge = document.getElementById("cartBadge");
+        const items = snap.val();
+        const count = items ? Object.keys(items).length : 0;
+        if (badge) {
+          badge.textContent = count;
+          badge.style.display = count>0?'inline-block':'none';
         }
+      });
+    }
+  });
 
-        document.getElementById('userEmail').style.display = 'inline-block';
-        document.getElementById('navbarLoginBtn').style.display = 'none';
-      } else {
-        document.getElementById('logoutBtn').style.display = 'none';
-        document.getElementById('userEmail').style.display = 'none';
-        document.getElementById('navbarLoginBtn').style.display = 'inline-block';
-      }
-    });
+  // 4. Login / Logout UI
+  document.getElementById('navbarLoginBtn').onclick = () =>
+    document.getElementById('loginModal').style.display = 'block';
+  document.getElementById('logoutBtn').onclick = () => signOut(auth);
 
-    import { signInWithPhoneNumber, RecaptchaVerifier } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById('loginModal').style.display = 'none';
+      document.getElementById('logoutBtn').style.display = 'inline-block';
+      const u = document.getElementById('userEmail');
+      if (u) { u.textContent = `Your ID is - ${user.email}`; u.style.display='inline-block' }
+      document.getElementById('navbarLoginBtn').style.display = 'none';
+    } else {
+      document.getElementById('logoutBtn').style.display = 'none';
+      document.getElementById('userEmail').style.display = 'none';
+      document.getElementById('navbarLoginBtn').style.display = 'inline-block';
+    }
+  });
 
-    // Setup reCAPTCHA
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      size: 'invisible',
-      callback: (response) => {
-        // reCAPTCHA solved
-      }
-    });
+  // 5. reCAPTCHA
+  window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+    size: 'invisible',
+    callback: () => {}
+  });
 
+  // 6. Admin login
+  const adminCreds = { username: "adminuser", password: " " };
+  let isAdmin = false;
+  document.getElementById("adminLoginBtn").onclick = () =>
+    document.getElementById("adminLoginModal").style.display = "block";
+  document.getElementById("adminLoginSubmit").onclick = () => {
+    const u = document.getElementById("adminUsername").value;
+    const p = document.getElementById("adminPassword").value;
+    if (u===adminCreds.username && p===adminCreds.password) {
+      alert("✅ Admin logged in!"); isAdmin=true;
+      document.getElementById("adminLoginModal").style.display="none";
+      displayProducts();
+    } else alert("❌ Invalid admin credentials.");
+  };
 
-    const adminCredentials = {
-      username: "adminuser",
-      password: "789456123"
-    };
+  // 7. Auth UI Logic (register/login/google)
+  document.getElementById('registerBtn').onclick = () => {
+    const e=document.getElementById('authEmail').value,
+          p=document.getElementById('authPassword').value;
+    createUserWithEmailAndPassword(auth,e,p)
+      .then(uc=>sendEmailVerification(uc.user).then(()=>{
+        alert("✅ Verification sent, please check email.");
+        document.getElementById('loginModal').style.display='none';
+        signOut(auth);
+      }))
+      .catch(err=>alert("❌ Registration failed: "+err.message));
+  };
 
-    let isAdmin = false; // Track admin state
+  document.getElementById('loginBtn').onclick = () => {
+    const e=document.getElementById('authEmail').value,
+          p=document.getElementById('authPassword').value;
+    signInWithEmailAndPassword(auth,e,p)
+      .then(uc=>{
+        if(uc.user.emailVerified){
+          alert("✅ Logged in!");document.getElementById('loginModal').style.display='none';
+        } else {
+          alert("❌ Please verify email.");signOut(auth);
+        }
+      })
+      .catch(err=>alert("❌ Login failed: "+err.message));
+  };
 
-    // Show admin modal on Admin button click
-    document.getElementById("adminLoginBtn").onclick = () => {
-      document.getElementById("adminLoginModal").style.display = "block";
-    };
+  document.getElementById('googleLoginBtn').onclick = () => {
+    const prov = new GoogleAuthProvider();
+    signInWithPopup(auth,prov)
+      .then(()=>{ alert("✅ Google Sign-In successful!"); document.getElementById('loginModal').style.display='none'; })
+      .catch(err=>alert("❌ Google Sign-In failed: "+err.message));
+  };
 
-    // Handle admin login
-    document.getElementById("adminLoginSubmit").onclick = () => {
-      const username = document.getElementById("adminUsername").value;
-      const password = document.getElementById("adminPassword").value;
+ // 8. SELL FORM SUBMISSION
 
-      if (
-        username === adminCredentials.username &&
-        password === adminCredentials.password
-      ) {
-        alert("✅ Admin logged in!");
-        isAdmin = true;
-        document.getElementById("adminLoginModal").style.display = "none";
-        displayProducts(); // refresh product cards with delete buttons
-      } else {
-        alert("❌ Invalid admin credentials.");
-      }
-    };
-
-
-
-
-    // ✅ 3. AUTH UI LOGIC
-    import { sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
-    document.getElementById('registerBtn').onclick = () => {
-      const email = document.getElementById('authEmail').value;
-      const password = document.getElementById('authPassword').value;
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-
-          // ✅ Send verification email
-          sendEmailVerification(user).then(() => {
-            alert("✅ Registered! A verification email has been sent. Please verify before logging in.");
-            document.getElementById('loginModal').style.display = 'none';
-            signOut(auth); // force logout until they verify
-          });
-        })
-        .catch((e) => alert("❌ Registration failed: " + e.message));
-    };
-
-
-
-    document.getElementById('logoutBtn').onclick = () => signOut(auth);
-
-    let currentUser = null;
-
-    onAuthStateChanged(auth, (user) => {
-      currentUser = user;
-    });
-
-    import { GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-
-    document.getElementById('googleLoginBtn').onclick = () => {
-      const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider)
-        .then(() => {
-          alert("✅ Google Sign-In successful!");
-          document.getElementById('loginModal').style.display = 'none';
-        })
-        .catch((e) => alert("❌ Google Sign-In failed: " + e.message));
-    };
-    document.getElementById('loginBtn').onclick = () => {
-      const email = document.getElementById('authEmail').value;
-      const password = document.getElementById('authPassword').value;
-
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          if (userCredential.user.emailVerified) {
-            alert("✅ Logged in!");
-            document.getElementById('loginModal').style.display = 'none';
-          } else {
-            alert("❌ Please verify your email before logging in.");
-            signOut(auth); // logout if not verified
-          }
-        })
-        .catch((e) => alert("❌ Login failed: " + e.message));
-    };
-
-// ✅ 4. SELL FORM SUBMISSION
 const form = document.getElementById('sellForm');
 const spinner = document.getElementById('loading-spinner');
 const cloudName = 'dobzp321s';
 const uploadPreset = 'your_upload_preset';
 
-form.addEventListener('submit', async (e) => {
+form.addEventListener('submit', async e => {
   e.preventDefault();
+
   if (!currentUser) {
     alert("Please log in to submit your product.");
     document.getElementById('loginModal').style.display = 'block';
@@ -405,147 +363,243 @@ form.addEventListener('submit', async (e) => {
 
   spinner.style.display = 'block';
 
-  const imageFile = document.getElementById('imageFile').files[0];
-  const formData = new FormData();
-  formData.append('file', imageFile);
-  formData.append('upload_preset', uploadPreset);
+  const imageFile = document.getElementById("imageFile").files[0];
+  if (!imageFile) {
+    alert("Please select an image file.");
+    spinner.style.display = 'none';
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append('file', imageFile);
+  fd.append('upload_preset', uploadPreset);
 
   try {
-    const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
       method: 'POST',
-      body: formData
+      body: fd
     });
-    const cloudinaryData = await cloudinaryRes.json();
-    console.log("Cloudinary Response:", cloudinaryData);
 
-    if (!cloudinaryData.secure_url) throw new Error('Cloudinary upload failed');
+    const data = await res.json();
+    if (!data.secure_url) throw new Error('Cloudinary upload failed');
 
-    const originalPrice = parseFloat(form.price.value);
-    const displayPrice = (originalPrice * 1.05).toFixed(2); // 5% markup
+    const productImageUrl = data.secure_url; // This is the product image URL
 
+    const orig = parseFloat(document.getElementById('productPrice').value);
+    const disp = (orig * 1.025).toFixed(2);
+
+    // Prepare objects
     const product = {
-      product_name: form.product_name.value,
-      category: form.category.value,
-      price: displayPrice,
-      description: form.description.value,
-      image_url: cloudinaryData.secure_url,
+      product_name: document.getElementById('productName').value,
+      category: document.getElementById('productCategory').value,
+      price: disp,
+      description: document.getElementById('productDescription').value,
+      image_url: productImageUrl,
+      seller_name: document.getElementById('sellerName').value,
+      seller_mobile: document.getElementById('sellerMobile').value,
       submitted_by: currentUser.email
     };
 
-    await push(ref(db, 'products'), product);
+    const seller = {
+      seller_name: document.getElementById('sellerName').value,
+      seller_mobile: document.getElementById('sellerMobile').value,
+      submitted_by: currentUser.email
+    };
 
-    // Show modal/prompt to pay 5% fee
-    const sellerFee = (originalPrice * 0.05).toFixed(2);
+    // 1. Store product details and get key
+    const productRef = await push(ref(db, 'products'), product);
+    const productKey = productRef.key;
+
+    // 2. Store seller info (linked by product key)
+    await push(ref(db, 'sellers'), { ...seller, product_key: productKey });
+
+   
+
+
+    // 4. Store buyer payment confirmation (empty at first, to be filled later)
+    await push(ref(db, 'buyer_payments'), { product_key: productKey, status: "pending" });
+
+    // 5. (Optional) Store in Google Sheet as before
+    fetch('https://script.google.com/macros/s/AKfycbyVVpD3hZEWHmcgUtzcuLykXxYkLhe8q6QOqbo9bd_5tYr--aZdsn7IWWe56keR0TXC/exec', {
+      method: 'POST',
+      body: JSON.stringify(product),
+      headers: { 'Content-Type': 'application/json' }
+    });
+
     spinner.style.display = 'none';
+
+    const fee = (orig * 0.05).toFixed(2);
 
     const modalHtml = `
-      <div id="paymentPromptModal" class="modal" style="display:block; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8);">
-        <div style="background:white; padding:20px; margin:10% auto; width:90%; max-width:500px; text-align:center; border-radius:8px;">
+      <div id="paymentPromptModal" class="modal" style="display:block;position:fixed;z-index:9999;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.8);">
+        <div style="background:white;padding:20px;margin:10% auto;width:90%;max-width:500px;text-align:center;border-radius:8px;position:relative;">
+          <span id="closePaymentModal" style="position:absolute;top:10px;right:20px;cursor:pointer;font-size:24px">&times;</span>
           <h2>Complete Your Listing</h2>
-          <p>Please pay ₹${sellerFee} to list your product.</p>
-          <img src="payment.jpg" alt="UPI QR" style="max-width:250px; margin:20px 0;" />
+          <p>Please pay ₹${fee} to list your product.</p>
+          <img src="payment.jpg" alt="UPI QR" style="max-width:250px;margin:20px 0;"/>
           <p>UPI ID: <b>dipaktaywade3@okaxis</b></p>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfR1LE4DSNF7ng-SjS4DVd4cOm8dpxDKdbGjZ7H4AYcwWQYVQ/viewform?usp=header" target="_blank" class="btn" style="display:inline-block; padding:10px 20px; background:#4CAF50; color:white; border:none; border-radius:4px; text-decoration:none; margin-top:10px;">Submit Payment Proof</a><br>
-          <button onclick="document.getElementById('paymentPromptModal').remove();" style="margin-top:15px; padding:8px 16px;">Close</button>
+          <form id="paymentProofForm">
+            <input type="text" id="upiRef" placeholder="Enter UPI Reference ID" required style="width:90%;padding:10px;margin:10px 0;border-radius:6px;border:1px solid #ccc;"/>
+            <input type="file" id="upiScreenshot" accept="image/*" required style="margin:10px 0;"/>
+            <button type="submit" style="padding:10px 20px;background:#4CAF50;color:white;border:none;border-radius:6px;">Confirm Payment</button>
+          </form>
         </div>
-      </div>
-    `;
+      </div>`;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-    alert('✅ Product submitted! Please complete payment to make your listing visible.');
-    form.reset();
-
-  } catch (err) {
-    console.error(err);
-    alert('❌ Error: ' + err.message);
-    spinner.style.display = 'none';
-  }
-});
-
-    // ✅ 5. FETCH AND DISPLAY PRODUCTS
-    const scrollableContainer = document.getElementById('scrollableProducts');
-    const gridContainer = document.getElementById('gridProducts');
-    scrollableContainer.innerHTML = '';
-    gridContainer.innerHTML = '';
-
-    const productsRef = ref(db, 'products');
-
-    // Dropdown change event listener
-    document.getElementById('categoryFilter').addEventListener('change', () => {
-      const search = document.getElementById('searchInput').value.trim();
-      displayProducts(search); // refresh based on selected filter and search
-    });
-    function displayProducts(query = '') {
-      const selectedCategory = document.getElementById('categoryFilter').value;
-      const gridContainer = document.getElementById('gridProducts');
-      gridContainer.innerHTML = '';
-
-      const productsRef = ref(db, 'products');
-      onValue(productsRef, (snapshot) => {
-        gridContainer.innerHTML = '';
-
-        let rowDiv = null;
-        let count = 0;
-
-        snapshot.forEach((child) => {
-          const key = child.key;
-          const p = child.val();
-
-          if (selectedCategory !== 'All' && p.category !== selectedCategory) return;
-          if (query && !p.product_name.toLowerCase().includes(query.toLowerCase()) &&
-            !p.description.toLowerCase().includes(query.toLowerCase())) return;
-
-          const card = document.createElement('div');
-          card.className = 'product-card';
-          card.innerHTML = `
-        <div class="product-image" style="background-image: url(${p.image_url})"></div>
-        <h3>${p.product_name}</h3>
-        <p>${p.description}</p>
-        <p><strong>Price:</strong> ₹${p.price}</p>
-        <p><strong>Category:</strong> ${p.category}</p>
-        ${isAdmin ? `<button class="delete-btn" data-key="${key}">Delete</button>` : ''}
-      `;
-
-          card.addEventListener("click", () => {
-            localStorage.setItem("selectedProduct", JSON.stringify(p));
-            window.location.href = "payment.html";
-          });
-
-          // Create a new horizontal row every 2 cards
-          if (count % 2 === 0) {
-            rowDiv = document.createElement('div');
-            rowDiv.className = 'scroll-row';
-            gridContainer.appendChild(rowDiv);
-          }
-
-          rowDiv.appendChild(card);
-          count++;
-
-          if (isAdmin) {
-            const deleteBtn = card.querySelector('.delete-btn');
-            deleteBtn.onclick = async (e) => {
-              e.stopPropagation();
-              await remove(ref(db, 'products/' + key));
-              alert('🗑️ Product deleted!');
-            };
-          }
-        });
+    // Add listeners only after modal is added:
+    const closeBtn = document.getElementById('closePaymentModal');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        const modal = document.getElementById('paymentPromptModal');
+        if (modal) modal.remove();
       });
     }
 
+    const paymentProofForm = document.getElementById('paymentProofForm');
+    if (paymentProofForm) {
+      paymentProofForm.addEventListener('submit', async event => {
+        event.preventDefault();
 
-    displayProducts(); // show all products initially
+        const upiRef = document.getElementById('upiRef').value.trim();
+        const screenshotFile = document.getElementById('upiScreenshot').files[0];
+
+        if (!upiRef || !screenshotFile) {
+          alert("Please enter UPI Reference ID and upload screenshot.");
+          return;
+        }
+
+        try {
+          const fd = new FormData();
+          fd.append('file', screenshotFile);
+          fd.append('upload_preset', uploadPreset);
+          const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: fd
+          });
+
+          const data = await res.json();
+
+          if (!data.secure_url) throw new Error('Cloudinary upload failed');
+
+          // Store seller payment confirmation in seller_payments branch
+      const paymentData = {
+  product_key: productKey,
+  user_email: currentUser.email,
+  upi_ref: upiRef,
+  screenshot_url: data.secure_url,
+  timestamp: Date.now(),
+  status: "submitted",
+  seller_name: document.getElementById('sellerName').value,
+  seller_mobile: document.getElementById('sellerMobile').value
+};
 
 
+          await push(ref(db, 'seller_payments'), paymentData);
 
-    document.getElementById('searchInput').addEventListener('input', function () {
-      const query = this.value.trim();
-      displayProducts(query); // call function with search keyword
+          // Send to Google Sheet
+          fetch('https://script.google.com/macros/s/AKfycby2Ntc0F-RYlHPS06hm0pzknoLvv_x5P4amj9HbNfeTyhs6MgVaheJcj6BpRigT-8uCHA/exec', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              seller_name: document.getElementById('sellerName').value,
+              seller_mobile: document.getElementById('sellerMobile').value,
+              seller_email: currentUser.email,
+              product_name: document.getElementById('productName').value,
+              product_image: productImageUrl, // Use the correct variable here!
+              upi_ref: upiRef,
+              confirmation_screenshot: data.secure_url, // Cloudinary URL of screenshot
+              timestamp: Date.now()
+            })
+          });
+
+          alert("✅ Payment proof submitted successfully!");
+          document.getElementById('paymentPromptModal').remove();
+
+          paymentProofForm.reset();
+
+        } catch (err) {
+          console.error(err);
+          alert("❌ Error submitting payment proof: " + err.message);
+        }
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ Error uploading image: " + err.message);
+  } finally {
+    spinner.style.display = 'none';
+  }
+});
+form.reset();
+
+  // 9. FETCH & DISPLAY PRODUCTS (CATEGORY-WISE HORIZONTAL SCROLL FOR MOBILE)
+  function displayProducts(query = '') {
+    const shopSection = document.getElementById('shopSection');
+    shopSection.innerHTML = '';
+    onValue(ref(db, 'products'), snap => {
+      const products = [];
+      snap.forEach(child => {
+        const prod = child.val();
+        prod.key = child.key;
+        products.push(prod);
+      });
+      // Filter by query if needed
+      let filtered = products;
+      if (query) {
+        filtered = products.filter(p =>
+          p.product_name?.toLowerCase().includes(query.toLowerCase()) ||
+          p.category?.toLowerCase().includes(query.toLowerCase())
+        );
+      }
+      // Group by category
+      const categories = {};
+      filtered.forEach(p => {
+        if (!categories[p.category]) categories[p.category] = [];
+        categories[p.category].push(p);
+      });
+      // For each category, create a section
+      Object.keys(categories).forEach(cat => {
+        const section = document.createElement('div');
+        section.className = 'category-section';
+        // Category title
+        const title = document.createElement('div');
+        title.className = 'category-title';
+        title.textContent = cat;
+        section.appendChild(title);
+        // Horizontal scroll row
+        const row = document.createElement('div');
+        row.className = 'category-scroll-row';
+        categories[cat].forEach(prod => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+          card.innerHTML = `
+            <img class="product-image" src="${prod.image_url || 'image.png'}" alt="${prod.product_name}">
+            <h3>${prod.product_name || ''}</h3>
+            <p>${prod.description || ''}</p>
+            <p><b>Price:</b> ₹${prod.price || '0.00'}</p>
+            <p><b>Category:</b> ${prod.category || ''}</p>
+          `;
+          // Add click handler to proceed to payment page
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', () => {
+            localStorage.setItem('selectedProduct', JSON.stringify(prod));
+            window.location.href = 'payment.html';
+          });
+          row.appendChild(card);
+        });
+        section.appendChild(row);
+        shopSection.appendChild(section);
+      });
     });
-
-
-
-  </script>
+  }
+  document.getElementById('categoryFilter').addEventListener('change',()=>displayProducts(document.getElementById('searchInput').value.trim()));
+  document.getElementById('searchInput').addEventListener('input', e => displayProducts(e.target.value.trim()));
+  displayProducts();
+  
+</script>
+  
   <!-- Login Modal -->
 
   <div id="loginModal" class="modal">
@@ -589,7 +643,7 @@ form.addEventListener('submit', async (e) => {
 
 
 <!-- Payment Modal -->
-<div id="paymentModal" class="modal">
+<!-- <div id="paymentModal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
     <h2>Please Pay ₹<span id="paymentAmount"></span> to List Your Product (5%)</h2>
@@ -599,8 +653,8 @@ form.addEventListener('submit', async (e) => {
     <a href="https://docs.google.com/forms/d/e/1FAIpQLSfR1LE4DSNF7ng-SjS4DVd4cOm8dpxDKdbGjZ7H4AYcwWQYVQ/viewform?usp=header"
        target="_blank" class="proof-btn">Send Proof of Payment</a>
   </div>
-</div>
+</div> -->
 
 </body>
-
+  
 </html>
